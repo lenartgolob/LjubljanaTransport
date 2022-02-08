@@ -1,0 +1,6 @@
+kumuluzee:
+  name: ljubljana-transport
+  env:
+    name: dev
+  version: 1.0.0
+  api-key: AIzaSyAuyfKKLPGy-FzTFXMFrzIqq-0mYhECQKk
