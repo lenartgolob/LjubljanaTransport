@@ -94,8 +94,11 @@ public class LjubljanaTransportService {
             DirectionResponse transitTrainDirections = googleMapsBean.getJsonDirection("transit&transit_mode=train");
             transitTrain.setDuration(transitTrainDirections.getRoute().getLeg().getDuration());
             transitTrain.setDistance(transitTrainDirections.getRoute().getLeg().getDistance());
-            // Slovenske železnice train rides in Ljubljana cost 1.3eur
-            transitTrain.setPrice(1.3);
+            // Slovenske železnice train rides in Ljubljana cost 1.3eur if < 10km else 1.9eur < 20km
+            if(transitTrainDirections.getRoute().getLeg().getDistance().getValue()<10000)
+                transitTrain.setPrice(1.3);
+            else
+                transitTrain.setPrice(1.9);
         }
         catch(Exception e) {
             System.out.println(e);
