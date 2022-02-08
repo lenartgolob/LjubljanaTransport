@@ -3,7 +3,7 @@ package com.kumuluzee.LjubljanaTransportResponse;
 import com.kumuluzee.GoogleMapsResponse.Distance;
 import com.kumuluzee.GoogleMapsResponse.Duration;
 
-public class Bicycle {
+public class Bicycling {
     private Duration duration;
     private Distance distance;
     private int kcal;

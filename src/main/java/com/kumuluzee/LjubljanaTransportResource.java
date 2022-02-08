@@ -1,5 +1,7 @@
 package com.kumuluzee;
 
+import com.kumuluzee.LjubljanaTransportResponse.LjubljanaTransportResponse;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -20,7 +22,7 @@ public class LjubljanaTransportResource {
 
     @GET
     public Response getXContext() throws Exception {
-        String transportResponse = transportBean.getTransportInfo();
+        LjubljanaTransportResponse transportResponse = transportBean.getTransportInfo();
         return transportResponse != null
                 ? Response.ok(transportResponse).build()
                 : Response.status(Response.Status.NOT_FOUND).build();

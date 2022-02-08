@@ -1,13 +1,14 @@
 com\kumuluzee\LjubljanaTransportResponse\Walking.class
 com\kumuluzee\LjubljanaTransportResponse\Transit.class
 com\kumuluzee\GoogleMapsResponse\Leg.class
+com\kumuluzee\LjubljanaTransportResponse\Bicycling.class
 com\kumuluzee\LjubljanaTransportResponse\Taxi.class
 com\kumuluzee\GoogleMapsResponse\Route.class
 com\kumuluzee\LjubljanaTransportService.class
+com\kumuluzee\GoogleMapsClient.class
 com\kumuluzee\LjubljanaTransportResource.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse.class
 com\kumuluzee\LjubljanaTransportResponse\LjubljanaTransportResponse.class
 com\kumuluzee\GoogleMapsResponse\Duration.class
 com\kumuluzee\GoogleMapsResponse\Distance.class
-com\kumuluzee\LjubljanaTransportResponse\Bicycle.class
 com\kumuluzee\LjubljanaTransportApplication.class
