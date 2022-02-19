@@ -11,12 +11,16 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @RequestScoped
 public class LjubljanaTransportService {
 
     @Inject
     private GoogleMapsClient googleMapsBean;
+
+    @Inject
+    private Taxis taxisBean;
 
     public LjubljanaTransportResponse getTransportInfo(){
         LjubljanaTransportResponse ljubljanaTransportResponse = new LjubljanaTransportResponse();
@@ -112,6 +116,11 @@ public class LjubljanaTransportService {
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public List<TaxiProvider> getTaxis() {
+        List<TaxiProvider> taxisProviders = taxisBean.getTaxisProviders();
+        return taxisProviders;
     }
 
 }
