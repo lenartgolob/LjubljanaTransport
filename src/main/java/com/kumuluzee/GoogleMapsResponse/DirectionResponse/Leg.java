@@ -1,12 +1,13 @@
-package com.kumuluzee.LjubljanaTransportResponse;
+package com.kumuluzee.GoogleMapsResponse.DirectionResponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Distance;
 import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Duration;
 
-public class Walking {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Leg {
     private Duration duration;
     private Distance distance;
-    private int kcal;
 
     public Duration getDuration() {
         return duration;
@@ -22,13 +23,5 @@ public class Walking {
 
     public void setDistance(Distance distance) {
         this.distance = distance;
-    }
-
-    public int getKcal() {
-        return kcal;
-    }
-
-    public void setKcal(int kcal) {
-        this.kcal = kcal;
     }
 }

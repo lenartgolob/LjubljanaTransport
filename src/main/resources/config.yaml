@@ -3,4 +3,5 @@ kumuluzee:
   env:
     name: dev
   version: 1.0.0
-  api-key: AIzaSyAuyfKKLPGy-FzTFXMFrzIqq-0mYhECQKk
+  google-api-key: AIzaSyAuyfKKLPGy-FzTFXMFrzIqq-0mYhECQKk
+  open-maps-api-key: 67a756a2-6946-43ff-95f2-f8a5c695ba15

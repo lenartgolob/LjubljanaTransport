@@ -6,6 +6,7 @@ public class LjubljanaTransportResponse {
     private Taxi taxi;
     private Transit bus;
     private Transit train;
+    private Carsharing carsharing;
 
     public Walking getWalking() {
         return walking;
@@ -45,5 +46,13 @@ public class LjubljanaTransportResponse {
 
     public void setTrain(Transit train) {
         this.train = train;
+    }
+
+    public Carsharing getCarsharing() {
+        return carsharing;
+    }
+
+    public void setCarsharing(Carsharing carsharing) {
+        this.carsharing = carsharing;
     }
 }

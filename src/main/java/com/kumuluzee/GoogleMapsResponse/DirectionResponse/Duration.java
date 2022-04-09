@@ -1,9 +1,9 @@
-package com.kumuluzee.GoogleMapsResponse;
+package com.kumuluzee.GoogleMapsResponse.DirectionResponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Distance {
+public class Duration {
     private String text;
     private int value;
 

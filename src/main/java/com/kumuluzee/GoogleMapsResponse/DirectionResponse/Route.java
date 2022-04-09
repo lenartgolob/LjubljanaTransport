@@ -1,6 +1,7 @@
-package com.kumuluzee.GoogleMapsResponse;
+package com.kumuluzee.GoogleMapsResponse.DirectionResponse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Leg;
 
 import java.util.List;
 

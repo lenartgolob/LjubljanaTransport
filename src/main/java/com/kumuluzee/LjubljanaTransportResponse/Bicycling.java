@@ -1,7 +1,7 @@
 package com.kumuluzee.LjubljanaTransportResponse;
 
-import com.kumuluzee.GoogleMapsResponse.Distance;
-import com.kumuluzee.GoogleMapsResponse.Duration;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Distance;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Duration;
 
 public class Bicycling {
     private Duration duration;

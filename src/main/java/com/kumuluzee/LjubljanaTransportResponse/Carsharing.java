@@ -1,11 +1,12 @@
-package com.kumuluzee.GoogleMapsResponse;
+package com.kumuluzee.LjubljanaTransportResponse;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Distance;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Duration;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Leg {
+public class Carsharing {
     private Duration duration;
     private Distance distance;
+    private double price;
 
     public Duration getDuration() {
         return duration;
@@ -21,5 +22,13 @@ public class Leg {
 
     public void setDistance(Distance distance) {
         this.distance = distance;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

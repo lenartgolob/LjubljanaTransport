@@ -1,14 +1,12 @@
 package com.kumuluzee;
 
-import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
-import com.kumuluzee.GoogleMapsResponse.DirectionResponse;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.DirectionResponse;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Distance;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Duration;
 import com.kumuluzee.LjubljanaTransportResponse.*;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -22,6 +20,12 @@ public class LjubljanaTransportService {
     @Inject
     private Taxis taxisBean;
 
+    @Inject
+    private OpenChargeClient openChargeBean;
+
+    @Inject
+    private XContext xContext;
+
     public LjubljanaTransportResponse getTransportInfo(){
         LjubljanaTransportResponse ljubljanaTransportResponse = new LjubljanaTransportResponse();
         ljubljanaTransportResponse.setWalking(getWalkingInfo());
@@ -29,6 +33,7 @@ public class LjubljanaTransportService {
         ljubljanaTransportResponse.setTaxi(getTaxiInfo());
         ljubljanaTransportResponse.setBus(getTransitBusInfo());
         ljubljanaTransportResponse.setTrain(getTransitTrainInfo());
+        ljubljanaTransportResponse.setCarsharing(getCarsharingInfo());
         return ljubljanaTransportResponse;
     }
 
@@ -121,6 +126,81 @@ public class LjubljanaTransportService {
     public List<TaxiProvider> getTaxis() {
         List<TaxiProvider> taxisProviders = taxisBean.getTaxisProviders();
         return taxisProviders;
+    }
+
+    public Carsharing getCarsharingInfo() {
+        String lat = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLat());
+        String lon = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLng());
+        double[] coordinatesStartPOI = openChargeBean.getNearestPOI(lat, lon);
+        lat = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLat());
+        lon = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLng());
+        double[] coordinatesEndPOI = openChargeBean.getNearestPOI(lat, lon);
+
+        Carsharing carsharing = new Carsharing();
+        DirectionResponse walkingToPOI = googleMapsBean.getJsonDirectionFromOrigin("walking", coordinatesStartPOI[0], coordinatesStartPOI[1]);
+        DirectionResponse walkingFromPOI = googleMapsBean.getJsonDirectionToDestination("walking", coordinatesEndPOI[0], coordinatesEndPOI[1]);
+        DirectionResponse drivingPOI = googleMapsBean.getJsonDirectionP2P("driving", coordinatesStartPOI[0], coordinatesStartPOI[1], coordinatesEndPOI[0], coordinatesEndPOI[1]);
+        // Calculate accumulative distance
+        int distanceValue = walkingToPOI.getRoute().getLeg().getDistance().getValue() + drivingPOI.getRoute().getLeg().getDistance().getValue() + walkingFromPOI.getRoute().getLeg().getDistance().getValue();
+        String distanceText;
+        if(distanceValue > 1000) {
+            distanceText = String.format("%.1f km", distanceValue/1000.0);
+        } else {
+            distanceText = distanceValue + " m";
+        }
+        Distance distance = new Distance();
+        distance.setValue(distanceValue);
+        distance.setText(distanceText);
+        carsharing.setDistance(distance);
+
+        // Calculate accumulative duration
+        int durationValue = walkingToPOI.getRoute().getLeg().getDuration().getValue() + drivingPOI.getRoute().getLeg().getDuration().getValue() + walkingFromPOI.getRoute().getLeg().getDuration().getValue();
+        String durationText;
+        if(durationValue >= 3600) {
+            int hours = (int) Math.floor(durationValue/3600);
+            int mins = Math.round((durationValue - hours*3600)/60);
+            if(mins == 0) {
+                if(hours == 1) {
+                    durationText = hours + " hour";
+                } else {
+                    durationText = hours + " hours";
+                }
+            } else {
+                if(hours == 1) {
+                    if(mins == 1) {
+                        durationText = hours + " hour " + mins + " min";
+                    } else {
+                        durationText = hours + " hour " + mins + " mins";
+                    }
+                } else {
+                    if(mins == 1) {
+                        durationText = hours + " hours" + mins + " min";
+                    } else {
+                        durationText = hours + " hours" + mins + " mins";
+                    }
+                }
+            }
+        } else {
+            durationText = String.format("%d mins", Math.round(durationValue/60));
+        }
+        Duration duration = new Duration();
+        duration.setValue(durationValue);
+        duration.setText(durationText);
+        carsharing.setDuration(duration);
+
+        int distanceCar = drivingPOI.getRoute().getLeg().getDistance().getValue();
+        int durationCar = drivingPOI.getRoute().getLeg().getDuration().getValue()/60;
+        int pricePerKM = (int) Math.round((distanceCar/1000)*0.23);
+        int pricePerMin = (int) Math.round(durationCar*0.07);
+        int price = Math.max(pricePerKM, pricePerMin);
+        if(price < 4) {
+            carsharing.setPrice(4);
+        } else if(price > 26) {
+            carsharing.setPrice(26);
+        } else {
+            carsharing.setPrice(price);
+        }
+        return carsharing;
     }
 
 }
