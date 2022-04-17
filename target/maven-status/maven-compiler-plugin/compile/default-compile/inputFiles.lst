@@ -5,9 +5,13 @@ D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\ja
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResponse\TaxiProvider.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResponse\Carsharing.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResponse\LjubljanaTransportResponse.java
+D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\OpenDataResponse\BicikeLJResponse.java
+D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\OpenDataClient.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\GoogleMapsResponse\DirectionResponse\Distance.java
+D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\OpenDataResponse\StationLocation.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\GoogleMapsClient.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResource.java
+D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\OpenDataResponse\Station.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResponse\Bicycling.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResponse\Transit.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\Taxis.java
@@ -23,3 +27,4 @@ D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\ja
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\XContext.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\GoogleMapsResponse\DirectionResponse\Leg.java
 D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\LjubljanaTransportResponse\Walking.java
+D:\Lenart Golob\Dokumenti\Laboratorij\LJTransport\LjubljanaTransport\src\main\java\com\kumuluzee\OpenDataResponse\Markers.java
