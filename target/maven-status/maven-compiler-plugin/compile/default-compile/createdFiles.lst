@@ -1,13 +1,16 @@
+com\kumuluzee\TextTransform.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\Duration.class
 com\kumuluzee\OpenChargeClient.class
 com\kumuluzee\OpenDataResponse\Station.class
 com\kumuluzee\LjubljanaTransportResponse\Walking.class
 com\kumuluzee\LjubljanaTransportResponse\Bicycling.class
+com\kumuluzee\OpenChargeResponse\OpenChargeResponse.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\DirectionResponse.class
 com\kumuluzee\LjubljanaTransportService.class
 com\kumuluzee\OpenDataResponse\BicikeLJResponse.class
 com\kumuluzee\LjubljanaTransportResponse\Carsharing.class
 com\kumuluzee\Taxis.class
+com\kumuluzee\LjubljanaTransportResponse\CarsharingPath.class
 com\kumuluzee\GoogleMapsClient.class
 com\kumuluzee\LjubljanaTransportResource.class
 com\kumuluzee\XContextFilter.class
@@ -19,6 +22,7 @@ com\kumuluzee\OpenDataResponse\Markers.class
 com\kumuluzee\GoogleMapsResponse\GeocodeResponse\Location.class
 com\kumuluzee\LjubljanaTransportResponse\Transit.class
 com\kumuluzee\XContext.class
+com\kumuluzee\LjubljanaTransportResponse\BicyclePath.class
 com\kumuluzee\LjubljanaTransportResponse\Taxi.class
 com\kumuluzee\OpenDataClient.class
 com\kumuluzee\GoogleMapsResponse\GeocodeResponse\Result.class
@@ -26,5 +30,6 @@ com\kumuluzee\GoogleMapsResponse\DirectionResponse\Leg.class
 com\kumuluzee\LjubljanaTransportResponse\LjubljanaTransportResponse.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\Route.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\Distance.class
+com\kumuluzee\OpenChargeResponse\AddressInfo.class
 com\kumuluzee\LjubljanaTransportApplication.class
 com\kumuluzee\OpenDataResponse\StationLocation.class

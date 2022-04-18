@@ -1,5 +1,7 @@
 package com.kumuluzee;
 
+import com.kumuluzee.LjubljanaTransportResponse.BicyclePath;
+import com.kumuluzee.LjubljanaTransportResponse.CarsharingPath;
 import com.kumuluzee.LjubljanaTransportResponse.LjubljanaTransportResponse;
 import com.kumuluzee.LjubljanaTransportResponse.TaxiProvider;
 
@@ -38,4 +40,23 @@ public class LjubljanaTransportResource {
                 ? Response.ok(taxiProviders).build()
                 : Response.status(Response.Status.NOT_FOUND).build();
     }
+
+    @GET
+    @Path("bicycle")
+    public Response getBicycles() throws Exception {
+        BicyclePath bicyclePath = transportBean.getBicyclePath();
+        return bicyclePath != null
+                ? Response.ok(bicyclePath).build()
+                : Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @GET
+    @Path("carsharing")
+    public Response getCarsharing() throws Exception {
+        CarsharingPath carsharingPath = transportBean.getCarsharingPath();
+        return carsharingPath != null
+                ? Response.ok(carsharingPath).build()
+                : Response.status(Response.Status.NOT_FOUND).build();
+    }
+
 }

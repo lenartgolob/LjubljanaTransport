@@ -1,9 +1,9 @@
 package com.kumuluzee;
 
 import com.kumuluzee.GoogleMapsResponse.DirectionResponse.DirectionResponse;
-import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Distance;
-import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Duration;
+import com.kumuluzee.GoogleMapsResponse.DirectionResponse.Leg;
 import com.kumuluzee.LjubljanaTransportResponse.*;
+import com.kumuluzee.OpenChargeResponse.OpenChargeResponse;
 import com.kumuluzee.OpenDataResponse.StationLocation;
 
 import javax.enterprise.context.RequestScoped;
@@ -26,6 +26,9 @@ public class LjubljanaTransportService {
 
     @Inject
     private OpenDataClient openDataBean;
+
+    @Inject
+    private TextTransform textTransformBean;
 
     @Inject
     private XContext xContext;
@@ -70,8 +73,8 @@ public class LjubljanaTransportService {
             int distanceValue = (int) Math.round(bikeDistance + toStart.getRoute().getLeg().getDistance().getValue() + toEnd.getRoute().getLeg().getDistance().getValue());
             int durationValue = (int) Math.round(bikeDuration + toStart.getRoute().getLeg().getDuration().getValue() + toEnd.getRoute().getLeg().getDuration().getValue());
 
-            bicycling.setDistance(parseDistance(distanceValue));
-            bicycling.setDuration(parseDuration(durationValue));
+            bicycling.setDistance(textTransformBean.textTransformDistance(distanceValue));
+            bicycling.setDuration(textTransformBean.textTransformeDuration(durationValue));
             // Average human burns 0.029 kcal per meter while cicyling at moderate speed and 0.062 per meter walking
             bicycling.setKcal((int) Math.round(bikeDistance*0.029 + (distanceValue-bikeDistance)*0.062));
         }
@@ -143,86 +146,106 @@ public class LjubljanaTransportService {
     }
 
     public Carsharing getCarsharingInfo() {
-        String lat = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLat());
-        String lon = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLng());
-        double[] coordinatesStartPOI = openChargeBean.getNearestPOI(lat, lon);
-        lat = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLat());
-        lon = Double.toString(googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLng());
-        double[] coordinatesEndPOI = openChargeBean.getNearestPOI(lat, lon);
-
-        Carsharing carsharing = new Carsharing();
-        DirectionResponse walkingToPOI = googleMapsBean.getJsonDirectionFromOrigin("walking", coordinatesStartPOI[0], coordinatesStartPOI[1]);
-        DirectionResponse walkingFromPOI = googleMapsBean.getJsonDirectionToDestination("walking", coordinatesEndPOI[0], coordinatesEndPOI[1]);
-        DirectionResponse drivingPOI = googleMapsBean.getJsonDirectionP2P("driving", coordinatesStartPOI[0], coordinatesStartPOI[1], coordinatesEndPOI[0], coordinatesEndPOI[1]);
-        // Calculate accumulative distance
-        int distanceValue = walkingToPOI.getRoute().getLeg().getDistance().getValue() + drivingPOI.getRoute().getLeg().getDistance().getValue() + walkingFromPOI.getRoute().getLeg().getDistance().getValue();
-        carsharing.setDistance(parseDistance(distanceValue));
-
-        // Calculate accumulative duration
-        int durationValue = walkingToPOI.getRoute().getLeg().getDuration().getValue() + drivingPOI.getRoute().getLeg().getDuration().getValue() + walkingFromPOI.getRoute().getLeg().getDuration().getValue();
-        carsharing.setDuration(parseDuration(durationValue));
-
-        int distanceCar = drivingPOI.getRoute().getLeg().getDistance().getValue();
-        int durationCar = drivingPOI.getRoute().getLeg().getDuration().getValue()/60;
-        int pricePerKM = (int) Math.round((distanceCar/1000)*0.23);
-        int pricePerMin = (int) Math.round(durationCar*0.07);
-        int price = Math.max(pricePerKM, pricePerMin);
-        if(price < 4) {
-            carsharing.setPrice(4);
-        } else if(price > 26) {
-            carsharing.setPrice(26);
+        double lat = googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLat();
+        double lon = googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLng();
+        OpenChargeResponse startingStation = openChargeBean.getClosestStation(lat, lon);
+        lat = googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLat();
+        lon = googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLng();
+        OpenChargeResponse finishStation = openChargeBean.getClosestStation(lat, lon);
+        if(startingStation == null || finishStation == null) {
+            return null;
         } else {
-            carsharing.setPrice(price);
-        }
-        return carsharing;
-    }
+            Carsharing carsharing = new Carsharing();
+            DirectionResponse walkingToPOI = googleMapsBean.getJsonDirectionFromOrigin("walking", startingStation.getAddressInfo().getLatitude(), startingStation.getAddressInfo().getLongitude());
+            DirectionResponse walkingFromPOI = googleMapsBean.getJsonDirectionToDestination("walking", finishStation.getAddressInfo().getLatitude(), finishStation.getAddressInfo().getLongitude());
+            DirectionResponse drivingPOI = googleMapsBean.getJsonDirectionP2P("driving", startingStation.getAddressInfo().getLatitude(), startingStation.getAddressInfo().getLongitude(), finishStation.getAddressInfo().getLatitude(), finishStation.getAddressInfo().getLongitude());
+            // Calculate accumulative distance
+            int distanceValue = walkingToPOI.getRoute().getLeg().getDistance().getValue() + drivingPOI.getRoute().getLeg().getDistance().getValue() + walkingFromPOI.getRoute().getLeg().getDistance().getValue();
+            carsharing.setDistance(textTransformBean.textTransformDistance(distanceValue));
 
-    public Distance parseDistance(int distanceValue) {
-        Distance distance = new Distance();
-        String distanceText;
-        if(distanceValue > 1000) {
-            distanceText = String.format("%.1f km", distanceValue/1000.0);
-        } else {
-            distanceText = distanceValue + " m";
-        }
-        distance.setValue(distanceValue);
-        distance.setText(distanceText);
-        return distance;
-    }
+            // Calculate accumulative duration
+            int durationValue = walkingToPOI.getRoute().getLeg().getDuration().getValue() + drivingPOI.getRoute().getLeg().getDuration().getValue() + walkingFromPOI.getRoute().getLeg().getDuration().getValue();
+            carsharing.setDuration(textTransformBean.textTransformeDuration(durationValue));
 
-    public Duration parseDuration(int durationValue) {
-        Duration duration = new Duration();
-        String durationText;
-        if(durationValue >= 3600) {
-            int hours = (int) Math.floor(durationValue/3600);
-            int mins = Math.round((durationValue - hours*3600)/60);
-            if(mins == 0) {
-                if(hours == 1) {
-                    durationText = hours + " hour";
-                } else {
-                    durationText = hours + " hours";
-                }
+            int distanceCar = drivingPOI.getRoute().getLeg().getDistance().getValue();
+            int durationCar = drivingPOI.getRoute().getLeg().getDuration().getValue()/60;
+            int pricePerKM = (int) Math.round((distanceCar/1000)*0.23);
+            int pricePerMin = (int) Math.round(durationCar*0.07);
+            int price = Math.max(pricePerKM, pricePerMin);
+            if(price < 4) {
+                carsharing.setPrice(4);
+            } else if(price > 26) {
+                carsharing.setPrice(26);
             } else {
-                if(hours == 1) {
-                    if(mins == 1) {
-                        durationText = hours + " hour " + mins + " min";
-                    } else {
-                        durationText = hours + " hour " + mins + " mins";
-                    }
-                } else {
-                    if(mins == 1) {
-                        durationText = hours + " hours" + mins + " min";
-                    } else {
-                        durationText = hours + " hours" + mins + " mins";
-                    }
-                }
+                carsharing.setPrice(price);
             }
-        } else {
-            durationText = String.format("%d mins", Math.round(durationValue/60));
+            return carsharing;
         }
-        duration.setValue(durationValue);
-        duration.setText(durationText);
-        return duration;
+    }
+
+    public BicyclePath getBicyclePath() {
+        BicyclePath bicyclePath = new BicyclePath();
+        try {
+            StationLocation startingStation = openDataBean.getClosestStation(googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLat(), googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLng());
+            StationLocation finishStation = openDataBean.getClosestStation(googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLat(), googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLng());
+            int bikeDistance = googleMapsBean.getJsonDirectionP2P("walking", startingStation.getLat(), startingStation.getLng(), finishStation.getLat(), finishStation.getLng()).getRoute().getLeg().getDistance().getValue();
+            int bikeDuration = (int) Math.round(bikeDistance / 3.33); // 3.33 m/s is 12 km/h (average biking speed)
+
+            DirectionResponse toStart = googleMapsBean.getJsonDirectionFromOrigin("walking", startingStation.getLat(), startingStation.getLng());
+            DirectionResponse toEnd = googleMapsBean.getJsonDirectionToDestination("walking", finishStation.getLat(), finishStation.getLng());
+
+            bicyclePath.setStartingStation(startingStation);
+            bicyclePath.setFinishStation(finishStation);
+            bicyclePath.setOriginToStation(toStart.getRoute().getLeg());
+            Leg stationToStation = new Leg();
+            stationToStation.setDistance(textTransformBean.textTransformDistance(bikeDistance));
+            stationToStation.setDuration(textTransformBean.textTransformeDuration(bikeDuration));
+            bicyclePath.setStationToStation(stationToStation);
+            bicyclePath.setStationToDestination(toEnd.getRoute().getLeg());
+        }
+        catch(Exception e) {
+            System.out.println(e);
+        }
+        return bicyclePath;
+    }
+
+    public CarsharingPath getCarsharingPath() {
+        CarsharingPath carsharingPath = new CarsharingPath();
+        try {
+            OpenChargeResponse startingStation = openChargeBean.getClosestStation(googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLat(), googleMapsBean.getCoordinates(xContext.getContext().getOrigin()).getResult().getGeometry().getLocation().getLng());
+            OpenChargeResponse finishStation = openChargeBean.getClosestStation(googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLat(), googleMapsBean.getCoordinates(xContext.getContext().getDestination()).getResult().getGeometry().getLocation().getLng());
+/*
+            int bikeDistance = googleMapsBean.getJsonDirectionP2P("walking", startingStation.getAddressInfo().getLatitude(), startingStation.getAddressInfo().getLongitude(), finishStation.getAddressInfo().getLatitude(), finishStation.getAddressInfo().getLongitude()).getRoute().getLeg().getDistance().getValue();
+*/
+/*
+            int bikeDuration = (int) Math.round(bikeDistance / 3.33); // 3.33 m/s is 12 km/h (average biking speed)
+*/
+
+            DirectionResponse toStart = googleMapsBean.getJsonDirectionFromOrigin("walking", startingStation.getAddressInfo().getLatitude(), startingStation.getAddressInfo().getLongitude());
+            DirectionResponse stationToStation = googleMapsBean.getJsonDirectionP2P("driving", startingStation.getAddressInfo().getLatitude(), startingStation.getAddressInfo().getLongitude(), finishStation.getAddressInfo().getLatitude(), finishStation.getAddressInfo().getLongitude());
+            DirectionResponse toEnd = googleMapsBean.getJsonDirectionToDestination("walking", finishStation.getAddressInfo().getLatitude(), finishStation.getAddressInfo().getLongitude());
+
+            carsharingPath.setStartingStation(startingStation.getAddressInfo());
+            carsharingPath.setFinishStation(finishStation.getAddressInfo());
+            carsharingPath.setOriginToStation(toStart.getRoute().getLeg());
+            carsharingPath.setStationToStation(stationToStation.getRoute().getLeg());
+            carsharingPath.setStationToDestination(toEnd.getRoute().getLeg());
+
+            int pricePerKM = (int) Math.round((stationToStation.getRoute().getLeg().getDistance().getValue()/1000)*0.23);
+            int pricePerMin = (int) Math.round((stationToStation.getRoute().getLeg().getDuration().getValue()/60)*0.07);
+            int price = Math.max(pricePerKM, pricePerMin);
+            if(price < 4) {
+                carsharingPath.setPrice(4);
+            } else if(price > 26) {
+                carsharingPath.setPrice(26);
+            } else {
+                carsharingPath.setPrice(price);
+            }
+        }
+        catch(Exception e) {
+            System.out.println(e);
+        }
+        return carsharingPath;
     }
 
 }
