@@ -3,6 +3,7 @@ com\kumuluzee\GoogleMapsResponse\DirectionResponse\Duration.class
 com\kumuluzee\OpenChargeClient.class
 com\kumuluzee\OpenDataResponse\Station.class
 com\kumuluzee\LjubljanaTransportResponse\Walking.class
+META-INF\services\javax.ws.rs.core.Application
 com\kumuluzee\LjubljanaTransportResponse\Bicycling.class
 com\kumuluzee\OpenChargeResponse\OpenChargeResponse.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\DirectionResponse.class
@@ -26,6 +27,7 @@ com\kumuluzee\LjubljanaTransportResponse\BicyclePath.class
 com\kumuluzee\LjubljanaTransportResponse\Taxi.class
 com\kumuluzee\OpenDataClient.class
 com\kumuluzee\GoogleMapsResponse\GeocodeResponse\Result.class
+api-specs\ljubljana-transport\openapi-configuration.json
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\Leg.class
 com\kumuluzee\LjubljanaTransportResponse\LjubljanaTransportResponse.class
 com\kumuluzee\GoogleMapsResponse\DirectionResponse\Route.class
