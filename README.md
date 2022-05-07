@@ -3,7 +3,6 @@
 __LjubljanaTransport API__ provides a REST API for Ljubljana public transport related actions. The available actions are getting a list of all public transport options in Ljubljana (/), getting a list of the taxis in Ljubljana (/taxis), getting the best path between A and B while renting a bicycle (BicikeLJ) or a car (Avant2Go).
 
 [__OpenAPI documentation__](http://130.61.179.62:8080/api-specs/ui/?url=http://130.61.179.62:8080/api-specs/ljubljana-transport/openapi.json)
-
 ​
 ## Purpose
 ​
